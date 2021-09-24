@@ -6,10 +6,12 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -18,7 +20,7 @@ import java.util.List;
 /**
  * @author pryadav
  */
-
+@MultipartConfig
 @WebServlet("/Process")
 public class Process extends HttpServlet {
 
@@ -40,75 +42,30 @@ public class Process extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, java.io.IOException {
-
+        System.out.println("------------------- do post request came  ------------");
         // Check that we have a file upload request
         isMultipart = ServletFileUpload.isMultipartContent(request);
         response.setContentType("text/html");
         java.io.PrintWriter out = response.getWriter( );
+        System.out.println("isMultipart="+isMultipart);
+        out.println("hello there..  ");
 
-        if( !isMultipart ) {
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet upload</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<p>No file uploaded</p>");
-            out.println("</body>");
-            out.println("</html>");
-            return;
-        }
-
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-
-        // maximum size that will be stored in memory
-        factory.setSizeThreshold(maxMemSize);
-
-        // Location to save data that is larger than maxMemSize.
-        factory.setRepository(new File("c:\\temp"));
-
-        // Create a new file upload handler
-        ServletFileUpload upload = new ServletFileUpload(factory);
-
-        // maximum file size to be uploaded.
-        upload.setSizeMax( maxFileSize );
 
         try {
             // Parse the request to get file items.
-            List fileItems = upload.parseRequest((RequestContext) request);
-
-            // Process the uploaded file items
-            Iterator i = fileItems.iterator();
-
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet upload</title>");
-            out.println("</head>");
-            out.println("<body>");
-
-            while ( i.hasNext () ) {
-                FileItem fi = (FileItem)i.next();
-                if ( !fi.isFormField () ) {
-                    // Get the uploaded file parameters
-                    String fieldName = fi.getFieldName();
-                    String fileName = fi.getName();
-                    String contentType = fi.getContentType();
-                    boolean isInMemory = fi.isInMemory();
-                    long sizeInBytes = fi.getSize();
-
-                    // Write the file
-                    if( fileName.lastIndexOf("\\") >= 0 ) {
-                        file = new File( filePath + fileName.substring( fileName.lastIndexOf("\\"))) ;
-                    } else {
-                        file = new File( filePath + fileName.substring(fileName.lastIndexOf("\\")+1)) ;
-                    }
-                    fi.write( file ) ;
-                    out.println("Uploaded Filename: " + fileName + "<br>");
-                }
+            System.out.println("request==>content type:"+request.getContentType());
+            System.out.println("request==>toString()"+request.toString());
+            System.out.println("request==>part="+request.getPart("file"));
+            Part filePart = request.getPart("file");
+            String fileName = filePart.getSubmittedFileName();
+            System.out.println("filename: -------->"+ fileName);
+            for (Part part : request.getParts()) {
+                part.write("C:\\upload\\" + fileName);
             }
-            out.println("</body>");
-            out.println("</html>");
+            response.getWriter().print("The file uploaded sucessfully.");
+
         } catch(Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 
