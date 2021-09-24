@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1" />
+    <title>Insight Collector!! </title>
+    <style th:inline="text">
+        body{
+            background: url([[@{/img/informatica_bg.png}]])
+                        no-repeat center center fixed;
+        }
+    </style>
+</head>
+<body>
+<div align="center" th:style="'color:white'">
+
+    <h1 >Informatica Hackathon</h1>
+    <br /> <br /><br />
+    <h2 >Insight Collector!!</h2>
+
+    <section class="my-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <h2>Upload File</h2>
+                    <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
+                    <form method="post" th:action="@{/upload}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="file" name="data" class="form-control-file">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload File</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <br /> <br /><br /> <br /><br /> <br />
+
+    <button type="submit" ><a th:href="@{/barChart}">Bar-Chart</a></button>
+    <button type="submit" ><a th:href="@{/pieChart}">Pie-Chart</a></button>
+
+    <br /> <br /><br /> <br /><br /> <br />
+
+    <a th:href="@{/barChart}">Bar-Chart</a><br /> <br />
+    <a th:href="@{/pieChart}">Pie-Chart</a>
+</div>
+</body>
+</html>
